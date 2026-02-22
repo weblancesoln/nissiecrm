@@ -5,12 +5,13 @@ A professional lead management CRM for Nissie Ideal Shelters Real Estate. Built 
 ## Features
 
 - **Lead Management**: Add, edit, view, and delete leads
-- **Lead Fields**: Prospect name, phone, email, point of contact, prospect response, remarks, status, source
+- **Lead Fields**: First name, last name, phone, email, point of contact, prospect response, remarks, status, source
+- **Staff Assignment**: Assign leads to staff members for tracking who contacts whom
 - **Color Coding**: Visual lead classification (Hot, Warm, New, Cold, Urgent, Follow Up, etc.)
 - **Bulk Upload**: Import leads from CSV or Excel files
 - **Export**: Download leads as CSV or Excel
-- **Search & Filter**: By name, phone, status, or color
-- **Dashboard**: Lead statistics at a glance
+- **Search & Filter**: By name, phone, status, color, or staff
+- **Dashboard**: Lead statistics and staff breakdown
 - **User Authentication**: Register, login, and secure access
 
 ## Quick Start
@@ -18,7 +19,7 @@ A professional lead management CRM for Nissie Ideal Shelters Real Estate. Built 
 ### 1. Create virtual environment and install dependencies
 
 ```bash
-cd "AI Website Builder /Nissie CRM"
+cd nissiecrm
 python -m venv venv
 source venv/bin/activate   # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
