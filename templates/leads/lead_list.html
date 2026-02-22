@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Leads - Nissie Ideal Shelters CRM{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h1 class="h4 mb-0 text-dark"><i class="bi bi-people-fill"></i> Lead Management</h1>
+    <a href="{% url 'leads:lead_create' %}" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Lead</a>
+</div>
+
+<!-- Stats -->
+<div class="row g-2 g-md-3 mb-4">
+    <div class="col-6 col-sm-4 col-lg">
+        <div class="card stat-card h-100 py-3 bg-primary text-white border-0">
+            <div class="card-body text-center">
+                <div class="small opacity-90">Total Leads</div>
+                <div class="h4 mb-0">{{ stats.total }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg">
+        <div class="card stat-card h-100 py-3 bg-white border-primary">
+            <div class="card-body text-center">
+                <div class="small text-muted">New</div>
+                <div class="h4 mb-0 text-primary">{{ stats.new }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg">
+        <div class="card stat-card h-100 py-3 bg-white border-primary">
+            <div class="card-body text-center">
+                <div class="small text-muted">Contacted</div>
+                <div class="h4 mb-0 text-primary">{{ stats.contacted }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg">
+        <div class="card stat-card h-100 py-3 bg-white border-primary">
+            <div class="card-body text-center">
+                <div class="small text-muted">Qualified</div>
+                <div class="h4 mb-0 text-primary">{{ stats.qualified }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-sm-4 col-lg">
+        <div class="card stat-card h-100 py-3 bg-white border-primary">
+            <div class="card-body text-center">
+                <div class="small text-muted">Won</div>
+                <div class="h4 mb-0 text-primary">{{ stats.won }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Staff breakdown -->
+{% if staff_with_leads %}
+<div class="card mb-4">
+    <div class="card-body py-2">
+        <div class="small text-muted mb-2"><i class="bi bi-person-badge"></i> Leads by Staff</div>
+        <div class="d-flex flex-wrap gap-3">
+            {% for u in staff_with_leads %}
+            <a href="?staff={{ u.id }}" class="text-decoration-none {% if staff_filter == u.id|stringformat:'s' %}fw-bold text-primary{% else %}text-dark{% endif %}">
+                <span class="badge bg-light text-dark border">{{ u.username }}: {{ u.lead_count }}</span>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-12 col-md-3">
+                <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Search name, phone, email...">
+            </div>
+            <div class="col-6 col-md-2">
+                <select name="status" class="form-select">
+                    <option value="">All Status</option>
+                    {% for v, l in status_choices %}
+                    <option value="{{ v }}" {% if status_filter == v %}selected{% endif %}>{{ l }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select name="color" class="form-select">
+                    <option value="">All Colors</option>
+                    {% for v, l in color_choices %}
+                    {% if v %}
+                    <option value="{{ v }}" {% if color_filter == v %}selected{% endif %}>{{ l }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6 col-md-2">
+                <select name="staff" class="form-select">
+                    <option value="">All Staff</option>
+                    {% for u in staff_users %}
+                    <option value="{{ u.id }}" {% if staff_filter == u.id|stringformat:'s' %}selected{% endif %}>{{ u.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-6 col-md-1">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Filter</button>
+            </div>
+            <div class="col-6 col-md-1">
+                <a href="{% url 'leads:lead_list' %}" class="btn btn-outline-secondary w-100">Clear</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lead Table (desktop) / Cards (mobile) -->
+<div class="card">
+    <div class="card-body p-0">
+        {% if leads %}
+        <!-- Desktop table -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th style="width: 30px"></th>
+                        <th>Prospect</th>
+                        <th>Staff</th>
+                        <th>Phone</th>
+                        <th>Point of Contact</th>
+                        <th>Response</th>
+                        <th>Status</th>
+                        <th>Updated</th>
+                        <th style="width: 120px">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads %}
+                    <tr>
+                        <td>
+                            {% if lead.color_code %}
+                            <span class="color-pill" style="background: {{ lead.color_code }}"></span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url 'leads:lead_detail' lead.pk %}" class="text-dark fw-medium text-decoration-none">{{ lead.full_name }}</a>
+                            {% if lead.email %}<br><small class="text-muted">{{ lead.email }}</small>{% endif %}
+                        </td>
+                        <td><small>{{ lead.assigned_to.username|default:"—" }}</small></td>
+                        <td>{{ lead.phone_number|default:"—" }}</td>
+                        <td>{{ lead.point_of_contact|default:"—"|truncatewords:5 }}</td>
+                        <td>{{ lead.prospect_response|default:"—"|truncatewords:8 }}</td>
+                        <td><span class="badge bg-light text-dark">{{ lead.get_status_display }}</span></td>
+                        <td><small class="text-muted">{{ lead.updated_at|date:"M d, Y" }}</small></td>
+                        <td>
+                            <a href="{% url 'leads:lead_detail' lead.pk %}" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'leads:lead_edit' lead.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Mobile cards -->
+        <div class="d-md-none p-3">
+            {% for lead in leads %}
+            <div class="card mb-2 border-primary border">
+                <div class="card-body py-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            {% if lead.color_code %}<span class="color-pill me-1" style="background: {{ lead.color_code }}"></span>{% endif %}
+                            <a href="{% url 'leads:lead_detail' lead.pk %}" class="text-dark fw-medium text-decoration-none">{{ lead.full_name }}</a>
+                            {% if lead.phone_number %}<br><small class="text-muted"><i class="bi bi-telephone"></i> {{ lead.phone_number }}</small>{% endif %}
+                            {% if lead.assigned_to %}<br><small class="text-muted"><i class="bi bi-person"></i> {{ lead.assigned_to.username }}</small>{% endif %}
+                            <br><span class="badge bg-light text-dark">{{ lead.get_status_display }}</span>
+                        </div>
+                        <div class="d-flex gap-1">
+                            <a href="{% url 'leads:lead_detail' lead.pk %}" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                            <a href="{% url 'leads:lead_edit' lead.pk %}" class="btn btn-sm btn-outline-secondary" title="Edit"><i class="bi bi-pencil"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-5 text-muted">
+            <i class="bi bi-inbox display-4"></i>
+            <p class="mt-2">No leads found. <a href="{% url 'leads:lead_create' %}">Add your first lead</a> or <a href="{% url 'leads:lead_upload' %}">upload from file</a>.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Register - Nissie Ideal Shelters CRM{% endblock %}
+{% block body_class %}auth-page{% endblock %}
+{% block main_class %}auth-main{% endblock %}
+{% block extra_css %}
+<style>
+    body.auth-page { background: linear-gradient(135deg, #5c4a1a 0%, #3d3212 50%, #2a2210 100%); min-height: 100vh; position: relative; }
+    main.auth-main { max-width: none; padding: 1rem 1rem 0; }
+    body.auth-page::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 45 L30 25 L50 45 L50 50 L10 50 Z M35 20 L45 10 L55 20 L55 25 L35 25 Z M5 35 L15 25 L25 35 L25 40 L5 40 Z' fill='none' stroke='rgba(255,255,255,0.03)' stroke-width='0.5'/%3E%3C/svg%3E"); pointer-events: none; }
+    .auth-container { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; position: relative; z-index: 1; }
+    .auth-card { background: rgba(255,255,255,0.97); border-radius: 16px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); overflow: hidden; max-width: 420px; }
+    .auth-logo { padding: 2.5rem 2rem 1rem; text-align: center; }
+    .auth-logo img { max-width: 180px; height: auto; }
+    .auth-body { padding: 1rem 2rem 2.5rem; }
+    .auth-body .form-control, .auth-body .form-select { border-radius: 8px; padding: 0.6rem 0.85rem; }
+    .auth-body .btn-primary { padding: 0.65rem; border-radius: 8px; font-weight: 600; background: linear-gradient(135deg, #8B6914, #6B5010); border: none; }
+    .auth-body .btn-primary:hover { background: linear-gradient(135deg, #9B7A1C, #7B6012); }
+    .auth-tagline { color: #718096; font-size: 0.9rem; margin-bottom: 1.5rem; }
+    .auth-footer { text-align: center; padding-top: 1rem; border-top: 1px solid #e2e8f0; margin-top: 1.5rem; }
+    .auth-footer a { color: #8B6914; font-weight: 600; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card w-100">
+        <div class="auth-logo">
+            <img src="{% static 'images/nissie-logo.png' %}" alt="NIS Nissie Ideal Shelters">
+        </div>
+        <div class="auth-body">
+            <h2 class="h4 mb-2 text-dark text-center">Create Account</h2>
+            <p class="auth-tagline text-center">Register to access the CRM</p>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<div class="text-danger small">{{ field.errors.0 }}</div>{% endif %}
+                </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-primary w-100 mt-2">Register</button>
+            </form>
+            <div class="auth-footer">
+                Already have an account? <a href="{% url 'leads:login' %}">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
